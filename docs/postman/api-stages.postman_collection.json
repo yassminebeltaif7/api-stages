@@ -1,0 +1,278 @@
+﻿{
+    "info":  {
+                 "_postman_id":  "8f1c2a94-5d6b-4f0a-9c31-7b2e6a4d0f11",
+                 "name":  "api-stages",
+                 "description":  "Collection de l\u0027API REST de gestion des offres de stage. Variables : base_url et token. Le jeton est rempli automatiquement par la requête Login.",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "auth":  {
+                 "type":  "bearer",
+                 "bearer":  [
+                                {
+                                    "key":  "token",
+                                    "value":  "{{token}}",
+                                    "type":  "string"
+                                }
+                            ]
+             },
+    "variable":  [
+                     {
+                         "key":  "base_url",
+                         "value":  "http://localhost:8000",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "token",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "offre_id",
+                         "value":  "",
+                         "type":  "string"
+                     }
+                 ],
+    "item":  [
+                 {
+                     "name":  "Login",
+                     "request":  {
+                                     "auth":  {
+                                                  "type":  "none"
+                                              },
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"email\": \"entreprise.alpha@example.com\",\n  \"password\": \"password\"\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              }
+                                              },
+                                     "url":  "{{base_url}}/api/login",
+                                     "description":  "Connexion publique. Enregistre le jeton renvoyé dans la variable de collection token."
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "if (pm.response.code === 200) {",
+                                                                   "    var data = pm.response.json();",
+                                                                   "    pm.collectionVariables.set(\u0027token\u0027, data.token);",
+                                                                   "    console.log(\u0027Jeton enregistre dans la variable token.\u0027);",
+                                                                   "}"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "Lister les offres",
+                     "request":  {
+                                     "auth":  {
+                                                  "type":  "none"
+                                              },
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/offres",
+                                     "description":  "Liste paginee publique des offres."
+                                 }
+                 },
+                 {
+                     "name":  "Filtrer les offres par domaine",
+                     "request":  {
+                                     "auth":  {
+                                                  "type":  "none"
+                                              },
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  {
+                                                 "raw":  "{{base_url}}/api/offres?domaine=developpement-web",
+                                                 "host":  [
+                                                              "{{base_url}}"
+                                                          ],
+                                                 "path":  [
+                                                              "api",
+                                                              "offres"
+                                                          ],
+                                                 "query":  [
+                                                               {
+                                                                   "key":  "domaine",
+                                                                   "value":  "developpement-web"
+                                                               }
+                                                           ]
+                                             },
+                                     "description":  "Filtre exact par slug du domaine. Remplacez developpement-web par data-intelligence-artificielle ou cybersecurite si vous voulez."
+                                 }
+                 },
+                 {
+                     "name":  "Voir une offre",
+                     "request":  {
+                                     "auth":  {
+                                                  "type":  "none"
+                                              },
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/offres/1",
+                                     "description":  "Detail d\u0027une offre. 404 si l\u0027identifiant n\u0027existe pas."
+                                 }
+                 },
+                 {
+                     "name":  "Creer une offre",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"titre\": \"Stage developpeur web\",\n  \"description\": \"Stage de quatre mois au sein de l\u0027equipe produit.\",\n  \"duree_mois\": 4,\n  \"remuneration\": 800,\n  \"date_debut\": \"2026-12-01\",\n  \"est_disponible\": true,\n  \"domaine_id\": 1,\n  \"competences\": [1, 2]\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              }
+                                              },
+                                     "url":  "{{base_url}}/api/offres",
+                                     "description":  "Creation protegee. Le proprietaire est automatiquement l\u0027utilisateur connecte. Renvoie 201."
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "if (pm.response.code === 201) {",
+                                                                   "    pm.collectionVariables.set(\u0027offre_id\u0027, pm.response.json().data.id);",
+                                                                   "    console.log(\u0027Identifiant de l offre cree enregistre.\u0027);",
+                                                                   "}"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "Modifier une offre",
+                     "request":  {
+                                     "method":  "PUT",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"titre\": \"Stage developpeur web - modifie\",\n  \"duree_mois\": 5\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              }
+                                              },
+                                     "url":  "{{base_url}}/api/offres/{{offre_id}}",
+                                     "description":  "Modification protegee par la Policy : proprietaire uniquement. Renvoie 403 pour une autre entreprise."
+                                 }
+                 },
+                 {
+                     "name":  "Supprimer une offre",
+                     "request":  {
+                                     "method":  "DELETE",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/offres/{{offre_id}}",
+                                     "description":  "Suppression protegee par la Policy : proprietaire uniquement."
+                                 }
+                 },
+                 {
+                     "name":  "Lister les domaines",
+                     "request":  {
+                                     "auth":  {
+                                                  "type":  "none"
+                                              },
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/domaines",
+                                     "description":  "Liste paginee publique des domaines, avec offres_count."
+                                 }
+                 },
+                 {
+                     "name":  "Voir un domaine",
+                     "request":  {
+                                     "auth":  {
+                                                  "type":  "none"
+                                              },
+                                     "method":  "GET",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/domaines/1",
+                                     "description":  "Detail d\u0027un domaine. 404 si l\u0027identifiant n\u0027existe pas."
+                                 }
+                 },
+                 {
+                     "name":  "Logout",
+                     "request":  {
+                                     "method":  "POST",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/logout",
+                                     "description":  "Revoque le jeton courant. Necessite un jeton valide."
+                                 }
+                 }
+             ]
+}
